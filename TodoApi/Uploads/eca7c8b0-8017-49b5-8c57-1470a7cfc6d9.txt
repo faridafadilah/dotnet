@@ -1,0 +1,65 @@
+controller
+public ActionResult<IEnumerable<MenuReadDto>> menus()
+        {
+            try
+            {
+                var menuItems = repository.menus();
+                if (menuItems != null)
+                {
+                    baseResponse.code = 200;
+                    baseResponse.message = "Success Get All Data!";
+                    getAllResponse.Meta = baseResponse;
+                    var mappedData = mapper.Map<IEnumerable<MenuReadDto>>(menuItems);
+                    getAllResponse.Data = mappedData;
+                    return Ok(getAllResponse);
+                }
+                baseResponse.code = 404;
+                baseResponse.message = "Data Not Found!";
+                return NotFound(baseResponse);
+            }
+            catch (Exception x)
+            {
+                baseResponse.code = 400;
+                baseResponse.message = x.Message;
+                return BadRequest(baseResponse);
+            }
+        }
+
+folder Implem repository 
+public interface IMenuRepository
+    {
+        IEnumerable<Menu> menus();
+}
+
+folder repository
+
+public IEnumerable<Menu> menus()
+        {
+            var items = context.menus.ToList();
+            foreach(var item in items)
+            {
+                item.subMenus = context.subMenus.Where(x => x.menu.id == item.id).ToList();
+            }
+            return items;
+
+folder profile mapper
+public class MenuProfile : Profile
+    {
+        public MenuProfile()
+        {
+            CreateMap<Menu, MenuReadDto>();
+}
+}
+
+private BaseResponse baseResponse = new BaseResponse();
+        private GetResponse<MenuReadDto> getResponse = new GetResponse<MenuReadDto>();
+        private GetAllResponse<MenuReadDto> getAllResponse = new GetAllResponse<MenuReadDto>();
+        public MenuController(IMenuRepository repository, IMapper mapper, IUserServiceRepo userRepository)
+        {
+            this.repository = repository;
+            this.mapper = mapper;
+            this.userRepository = userRepository;
+        }
+        
+program.cs
+services.AddScoped<IMenuRepository, MenuRepository>();

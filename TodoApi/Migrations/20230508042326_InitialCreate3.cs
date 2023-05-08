@@ -5,7 +5,7 @@
 namespace TodoApi.Migrations
 {
     /// <inheritdoc />
-    public partial class AddUser : Migration
+    public partial class InitialCreate3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

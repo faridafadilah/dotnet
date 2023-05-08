@@ -13,9 +13,23 @@ namespace TodoApi.Data.Implementations
       this._context = _context;
     }
 
-    public IEnumerable<TodoItem> getAllTodos()
+    public IEnumerable<TodoItem> getAllTodos(int pageNumber, int pageSize, string search)
     {
-      var todos = _context.TodoItems.ToList();
+      IQueryable<TodoItem> query = _context.TodoItems;
+      if (!string.IsNullOrEmpty(search))
+      {
+        query = query.Where(t => t.Name.Contains(search));
+      }
+      query = query.OrderByDescending(t => t.CreatedAt);
+
+      int totalCount = query.Count();
+      int totalPage = (int)Math.Ceiling((double)totalCount / pageSize);
+
+      var todos = query
+        .Skip((pageNumber - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+
       foreach (var todo in todos)
       {
         todo.Books = _context.Books.Where(x => x.Todo.Id == todo.Id).ToList();
@@ -26,6 +40,10 @@ namespace TodoApi.Data.Implementations
     public TodoItem getById(long id)
     {
       var todo = _context.TodoItems.Find(id);
+      if (todo == null)
+      {
+        return null; // or throw an exception, depending on the desired behavior
+      }
       todo.Books = _context.Books.Where(x => x.Todo.Id == todo.Id).ToList();
       return todo;
     }
@@ -50,6 +68,11 @@ namespace TodoApi.Data.Implementations
       if (todo == null)
       {
         throw new ArgumentNullException(nameof(todo));
+      }
+
+      if (todo.File != null)
+      {
+        todo.FileName = todo.File.FileName;
       }
 
       _context.TodoItems.Add(todo);

@@ -11,8 +11,8 @@ using TodoApi.Data;
 namespace TodoApi.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    [Migration("20230504062717_InitialCreate1")]
-    partial class InitialCreate1
+    [Migration("20230508034554_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace TodoApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TodoAp.Models.Book", b =>
+            modelBuilder.Entity("TodoApi.Models.Book", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,13 +48,19 @@ namespace TodoApi.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("TodoAp.Models.TodoItem", b =>
+            modelBuilder.Entity("TodoApi.Models.TodoItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsComplete")
                         .HasColumnType("boolean");
@@ -67,20 +73,56 @@ namespace TodoApi.Migrations
                     b.ToTable("TodoItems");
                 });
 
-            modelBuilder.Entity("TodoAp.Models.Book", b =>
+            modelBuilder.Entity("TodoApi.Models.User", b =>
                 {
-                    b.HasOne("TodoAp.Models.TodoItem", "Todo")
-                        .WithMany("Books")
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("id"));
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("firstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("lastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("passwordHash")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("passwordSalt")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("TodoApi.Models.Book", b =>
+                {
+                    b.HasOne("TodoApi.Models.TodoItem", "Todo")
+                        .WithMany()
                         .HasForeignKey("TodoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Todo");
-                });
-
-            modelBuilder.Entity("TodoAp.Models.TodoItem", b =>
-                {
-                    b.Navigation("Books");
                 });
 #pragma warning restore 612, 618
         }

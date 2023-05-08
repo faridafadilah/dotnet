@@ -4,7 +4,7 @@ namespace TodoApi.Data.Interface
 {
   public interface ITodoRepository
   {
-    IEnumerable<TodoItem> getAllTodos();
+    IEnumerable<TodoItem> getAllTodos(int pageNumber, int pageSize, string search);
     TodoItem getById(long id);
     void createTodo(TodoItem todo);
     bool checkDuplicate(string name);

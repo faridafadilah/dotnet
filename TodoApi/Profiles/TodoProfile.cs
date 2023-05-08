@@ -10,7 +10,6 @@ namespace TodoApi.Profiles
     public TodoProfile()
     {
       CreateMap<TodoItem, ResTodoDTO>();
-      CreateMap<Book, BookDTO>();
       CreateMap<TodoItem, TodoItemDTO>();
       CreateMap<TodoItemDTO, TodoItem>();
     }

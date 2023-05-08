@@ -291,3 +291,4 @@ D:\latihan-dotnet\TodoApi\bin\Debug\net6.0\Npgsql.EntityFrameworkCore.PostgreSQL
 D:\latihan-dotnet\TodoApi\bin\Debug\net6.0\AutoMapper.dll
 D:\latihan-dotnet\TodoApi\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 D:\latihan-dotnet\TodoApi\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\latihan-dotnet\TodoApi\bin\Debug\net6.0\Uploads\398b55f0-3a1d-4514-8aed-5533e920a59f.json
