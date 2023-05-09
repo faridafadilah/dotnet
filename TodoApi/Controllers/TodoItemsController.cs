@@ -27,7 +27,7 @@ namespace TodoApi.Controllers
     public ActionResult<BasePageResponse<IEnumerable<ResTodoDTO>>> GetTodoItems([FromQuery(Name = "page")] int pageNumber = 1,
     [FromQuery(Name = "limit")] int pageSize = 10, [FromQuery(Name = "search")] string? search = null)
     {
-      var todoItems = repository.getAllTodos(pageNumber, pageSize, search);
+      var (todoItems, totalCount) = repository.getAllTodos(pageNumber, pageSize, search);
       if (todoItems != null && todoItems.Any())
       {
         var mappedData = mapper.Map<IEnumerable<ResTodoDTO>>(todoItems);
@@ -36,8 +36,8 @@ namespace TodoApi.Controllers
         response.message = "Success";
         response.currentPage = pageNumber;
         response.data = mappedData;
-        response.totalPage = (int)Math.Ceiling((double)todoItems.Count() / pageSize);
-        response.totalElement = pageSize;
+        response.totalPage = (int)Math.Ceiling((double)totalCount / pageSize);
+        response.totalElement = totalCount;
         return Ok(response);
       }
       else

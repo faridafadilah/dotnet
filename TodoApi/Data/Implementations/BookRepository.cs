@@ -13,10 +13,23 @@ namespace TodoApi.Data.Implementations
       this._context = _context;
     }
 
-    public IEnumerable<Book> getAllBooks()
+    public (IEnumerable<Book> books, int totalCount) getAllBooks(int pageNumber, int pageSize, string search)
     {
-      var books = _context.Books.ToList();
-      return books;
+      // var books = _context.Books.ToList();
+      // return books;
+      IQueryable<Book> query = _context.Books;
+      if (!string.IsNullOrEmpty(search))
+      {
+        query = query.Where(b => b.Name.Contains(search));
+      }
+      query = query.OrderByDescending(b => b.CreatedAt);
+      int totalCount = query.Count();
+
+      var books = query
+        .Skip((pageNumber - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+      return (books, totalCount);
     }
 
     public Book getById(long id)

@@ -25,18 +25,21 @@ namespace TodoApi.Controllers
 
     // GET: api/TodoItems
     [HttpGet]
-    public ActionResult<ResponApi<IEnumerable<BookDTO>>> GetBooks()
+    public ActionResult<ResponApi<IEnumerable<BookDTO>>> GetBooks([FromQuery(Name = "page")] int pageNumber = 1,
+    [FromQuery(Name = "limit")] int pageSize = 10, [FromQuery(Name = "search")] string? search = null)
     {
-      var books = repository.getAllBooks();
-      if (books != null)
+      var (books, totalCount) = repository.getAllBooks(pageNumber, pageSize, search);
+      if (books != null && books.Any())
       {
         var mappedData = mapper.Map<IEnumerable<BookDTO>>(books);
-        return Ok(new ResponApi<IEnumerable<BookDTO>>
-        {
-          message = "Success",
-          code = 200,
-          data = mappedData
-        });
+        BasePageResponse<IEnumerable<BookDTO>> response = new BasePageResponse<IEnumerable<BookDTO>>();
+        response.code = 200;
+        response.message = "Success";
+         response.currentPage = pageNumber;
+        response.data = mappedData;
+        response.totalPage = (int)Math.Ceiling((double)totalCount / pageSize);
+        response.totalElement = totalCount;
+        return Ok(response);
       }
       return NotFound(new ResponApi<IEnumerable<BookDTO>>
       {
@@ -56,7 +59,7 @@ namespace TodoApi.Controllers
       if (book == null)
       {
         response.code = 404;
-        response.message = "Not Found by Id="+ id;
+        response.message = "Not Found by Id=" + id;
         response.data = null;
         return NotFound(response);
       }
@@ -78,7 +81,7 @@ namespace TodoApi.Controllers
       if (modelDto == null)
       {
         response.code = 404;
-        response.message = "Not Found by Id="+ id;
+        response.message = "Not Found by Id=" + id;
         response.data = null;
         return NotFound(response);
       }
@@ -110,7 +113,7 @@ namespace TodoApi.Controllers
       if (modelDto == null)
       {
         response.code = 404;
-        response.message = "Not Found by Id="+ bookDTO.TodoId;
+        response.message = "Not Found by Id=" + bookDTO.TodoId;
         response.data = null;
         return NotFound(response);
       }
@@ -142,7 +145,7 @@ namespace TodoApi.Controllers
       if (todoItem == null)
       {
         response.code = 404;
-        response.message = "Data Not Found by Id="+ id;
+        response.message = "Data Not Found by Id=" + id;
         response.data = null;
         return NotFound(response);
       }
@@ -151,7 +154,7 @@ namespace TodoApi.Controllers
       repository.saveChanges();
 
       response.code = 200;
-      response.message = "Success Delete by Id="+ id;
+      response.message = "Success Delete by Id=" + id;
       response.data = null;
 
       return Ok(response);

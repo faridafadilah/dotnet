@@ -4,7 +4,7 @@ namespace TodoApi.Data.Interface
 {
   public interface IBookRepository
   {
-    IEnumerable<Book> getAllBooks();
+    (IEnumerable<Book> books, int totalCount) getAllBooks(int pageNumber, int pageSize, string search);
     Book getById(long id);
     void createBook(Book book);
     bool checkDuplicate(string name);

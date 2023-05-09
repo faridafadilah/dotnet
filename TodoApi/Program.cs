@@ -113,9 +113,6 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseStaticFiles();
 app.UseCors("AllowOrigin");
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

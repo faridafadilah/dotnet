@@ -13,7 +13,7 @@ namespace TodoApi.Data.Implementations
       this._context = _context;
     }
 
-    public IEnumerable<TodoItem> getAllTodos(int pageNumber, int pageSize, string search)
+    public (IEnumerable<TodoItem> todos, int totalCount) getAllTodos(int pageNumber, int pageSize, string search)
     {
       IQueryable<TodoItem> query = _context.TodoItems;
       if (!string.IsNullOrEmpty(search))
@@ -21,10 +21,8 @@ namespace TodoApi.Data.Implementations
         query = query.Where(t => t.Name.Contains(search));
       }
       query = query.OrderByDescending(t => t.CreatedAt);
-
       int totalCount = query.Count();
-      int totalPage = (int)Math.Ceiling((double)totalCount / pageSize);
-
+      
       var todos = query
         .Skip((pageNumber - 1) * pageSize)
         .Take(pageSize)
@@ -34,7 +32,7 @@ namespace TodoApi.Data.Implementations
       {
         todo.Books = _context.Books.Where(x => x.Todo.Id == todo.Id).ToList();
       }
-      return todos;
+      return (todos, totalCount);
     }
 
     public TodoItem getById(long id)
